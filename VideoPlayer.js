@@ -66,7 +66,11 @@ export default class VideoPlayer extends Component {
             duration: 0,
 
             //related to googleIMA SDK
-            controlsShouldBeRendered: this.props.instreamAdInfo ? false : true
+            //at first controls should not be rendered(until ad is not finished)
+            controlsShouldBeRendered: this.props.instreamAdInfo ? false : true,
+
+            //also touchable should be disabled at first(until ad is not finished)
+            isTouchableDisabled: true
         };
 
         /**
@@ -1114,6 +1118,7 @@ export default class VideoPlayer extends Component {
             <TouchableWithoutFeedback
                 onPress={this.events.onScreenTouch}
                 style={[styles.player.container, this.styles.containerStyle]}
+                disabled={this.state.isTouchableDisabled}
             >
                 <View style={[styles.player.container, this.styles.containerStyle]}>
                     <Video
@@ -1132,8 +1137,10 @@ export default class VideoPlayer extends Component {
                         onLoad={this.events.onLoad}
                         onEnd={this.events.onEnd}
                         onVideoWillBeStarted={() => {
+                            //ad is finished, so controls should be rendered and touchable should be enabled
                             this.setState({
-                                controlsShouldBeRendered: true
+                                controlsShouldBeRendered: true,
+                                isTouchableDisabled: false
                             })
                         }}
 
