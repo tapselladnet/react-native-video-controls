@@ -98,6 +98,7 @@ export default class VideoPlayer extends Component {
             onLoad: this._onLoad.bind(this),
             onPause: this.props.onPause,
             onPlay: this.props.onPlay,
+            onVideoWillBeStarted: this._onVideoWillBeStarted.bind(this)
         };
 
         /**
@@ -272,7 +273,14 @@ export default class VideoPlayer extends Component {
         this.setState(state);
     }
 
-
+    // new callback: called when we have no ad or ad is finished and main video will be started soon
+    _onVideoWillBeStarted() {
+        //ad is finished, so controls should be rendered and touchable should be enabled (or we don't have ads at all)
+        this.setState({
+            controlsShouldBeRendered: true,
+            isTouchableDisabled: false
+        });
+    }
 
     /**
     | -------------------------------------------------------
@@ -1118,6 +1126,7 @@ export default class VideoPlayer extends Component {
             <TouchableWithoutFeedback
                 onPress={this.events.onScreenTouch}
                 style={[styles.player.container, this.styles.containerStyle]}
+                //while playing preroll ads touch events must pass to GoogleIMA SDK
                 disabled={this.state.isTouchableDisabled}
             >
                 <View style={[styles.player.container, this.styles.containerStyle]}>
@@ -1136,13 +1145,7 @@ export default class VideoPlayer extends Component {
                         onError={this.events.onError}
                         onLoad={this.events.onLoad}
                         onEnd={this.events.onEnd}
-                        onVideoWillBeStarted={() => {
-                            //ad is finished, so controls should be rendered and touchable should be enabled
-                            this.setState({
-                                controlsShouldBeRendered: true,
-                                isTouchableDisabled: false
-                            })
-                        }}
+                        onVideoWillBeStarted={this.events.onVideoWillBeStarted}
 
                         style={[styles.player.video, this.styles.videoStyle]}
 
