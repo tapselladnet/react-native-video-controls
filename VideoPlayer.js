@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Video from 'react-native-video';
+import Video from 'react-native-video-tapsell';
 import {
     TouchableWithoutFeedback,
     TouchableHighlight,
