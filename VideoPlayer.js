@@ -98,7 +98,9 @@ export default class VideoPlayer extends Component {
             onLoad: this._onLoad.bind(this),
             onPause: this.props.onPause,
             onPlay: this.props.onPlay,
-            onVideoWillBeStarted: this._onVideoWillBeStarted.bind(this)
+            onVideoWillBeStarted: this._onVideoWillBeStarted.bind(this),
+            onLoaderUnmountRequested: this._onLoaderUnmountRequested.bind(this),
+            onLoaderMountRequested: this._onLoaderMountRequested.bind(this)
         };
 
         /**
@@ -245,6 +247,8 @@ export default class VideoPlayer extends Component {
      * @param {object} err  Err obj returned from <Video> component
      */
     _onError(err) {
+        this._onLoaderUnmountRequested();
+
         let state = this.state;
         state.error = true;
         state.loading = false;
@@ -280,6 +284,18 @@ export default class VideoPlayer extends Component {
             controlsShouldBeRendered: true,
             isTouchableDisabled: false
         });
+    }
+
+    _onLoaderUnmountRequested() {
+        if (this.props.onLoaderUnmountRequested && typeof this.props.onLoaderUnmountRequested === 'function') {
+            this.props.onLoaderUnmountRequested()
+        }
+    }
+
+    _onLoaderMountRequested() {
+        if (this.props.onLoaderMountRequested && typeof this.props.onLoaderMountRequested === 'function') {
+            this.props.onLoaderMountRequested()
+        }
     }
 
     /**
@@ -680,6 +696,7 @@ export default class VideoPlayer extends Component {
      * pan responders.
      */
     componentWillMount() {
+        this._onLoaderMountRequested();
         this.initSeekPanResponder();
         this.initVolumePanResponder();
     }
@@ -1146,6 +1163,8 @@ export default class VideoPlayer extends Component {
                         onLoad={this.events.onLoad}
                         onEnd={this.events.onEnd}
                         onVideoWillBeStarted={this.events.onVideoWillBeStarted}
+                        onLoaderUnmountRequested={this.events.onLoaderUnmountRequested}
+                        onLoaderMountRequested={this.events.onLoaderMountRequested}
 
                         style={[styles.player.video, this.styles.videoStyle]}
 
@@ -1153,7 +1172,6 @@ export default class VideoPlayer extends Component {
                     />
                     {this.renderError()}
                     {this.renderTopControls()}
-                    {this.renderLoader()}
                     {this.renderBottomControls()}
                 </View>
             </TouchableWithoutFeedback>
